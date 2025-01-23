@@ -20,10 +20,7 @@ llm = ChatOllama(model_name="llama3.2:1b")
 
 
 class Movie(BaseModel):
-    name: str | None = Field(
-        ...,
-        description="The name of the movie. Leave empty if the name is not mentioned.",
-    )
+    review: str = Field(..., description="The review text")
     sentiment: Literal["positive", "neutral", "negative"] = Field(
         ..., description="The sentiment of the review"
     )
