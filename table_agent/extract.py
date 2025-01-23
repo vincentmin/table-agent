@@ -35,10 +35,10 @@ def extract[T](
     """
     if llm is None:
         llm = load_default_model()
-    graph = get_graph(llm)
+    graph = get_graph(llm, table, output_model)
     messages: Messages = graph.invoke(
         {
-            "messages": [HumanMessage(text=prompt)],
+            "messages": [HumanMessage(content=prompt)],
             "df": table,
             "output_model": output_model,
         }

@@ -16,7 +16,7 @@ print(df.head())
 # 3  This film was probably inspired by Godard's Ma...      0
 # 4  Oh, brother...after hearing about this ridicul...      0
 
-llm = ChatOllama(model_name="llama3.2:1b")
+llm = ChatOllama(model="llama3.2:1b")
 
 
 class Movie(BaseModel):
@@ -27,6 +27,6 @@ class Movie(BaseModel):
 
 
 # Extract the table
-outputs = extract(df, Movie, llm=ChatOllama(model_name="llama3.2:1b"))
+outputs = extract(df, Movie, llm=llm)
 for output in outputs[:5]:
     print(output)

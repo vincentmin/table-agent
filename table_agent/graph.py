@@ -20,19 +20,20 @@ def get_graph(llm: BaseChatModel, df: pd.DataFrame, output_model: Type[BaseModel
         df (pd.DataFrame): The table to be parsed
         output_model (Type[BaseModel]): The table will be parsed into a list of instances of this output model
     """
+    tools = [python_tool]
+    tool_node = ToolNode(tools)
+    agent = get_agent(llm, df, output_model, tools)
 
-    agent = get_agent(llm, df, output_model)
-    tools = ToolNode([python_tool])
-
-    def route(messages: Messages) -> Literal["tools", "_end_"]:
+    def route(messages: Messages) -> Literal["tools", "__end__"]:
         last_message = messages[-1]
         if last_message.tool_calls:
             return "tools"
-        return "_end_"
+        return "__end__"
 
     builder = MessageGraph()
     builder.add_node("agent", agent)
-    builder.add_node("tools", tools)
+    builder.add_node("tools", tool_node)
+    builder.add_edge("__start__", "agent")
     builder.add_edge("tools", "agent")
     builder.add_conditional_edges("agent", route)
 
