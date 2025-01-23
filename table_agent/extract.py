@@ -6,6 +6,7 @@ from .graph import get_graph, Messages
 
 type TableInput = pd.DataFrame
 
+
 def load_default_model() -> BaseChatModel:
     """Loads a default model
 
@@ -13,11 +14,16 @@ def load_default_model() -> BaseChatModel:
         BaseChatModel: A default model
     """
     from langchain_openai import ChatOpenAI
+
     return ChatOpenAI(model_name="gpt-4o-mini")
 
 
-
-def extract[T](table: TableInput, output_model: Type[T], llm: BaseChatModel | None = None, prompt:str = "Extract data from table") -> tuple[str,list[T]]:
+def extract[T](
+    table: TableInput,
+    output_model: Type[T],
+    llm: BaseChatModel | None = None,
+    prompt: str = "Extract data from table",
+) -> tuple[str, list[T]]:
     """Takes in a table and an output model and returns a list of output models
 
     Args:
@@ -30,11 +36,13 @@ def extract[T](table: TableInput, output_model: Type[T], llm: BaseChatModel | No
     if llm is None:
         llm = load_default_model()
     graph = get_graph(llm)
-    messages: Messages = graph.invoke({
-        "messages": [HumanMessage(text=prompt)],
-        "df": table,
-        "output_model": output_model
-    })
+    messages: Messages = graph.invoke(
+        {
+            "messages": [HumanMessage(text=prompt)],
+            "df": table,
+            "output_model": output_model,
+        }
+    )
     response = messages[-1]
     outputs: list[T] = messages[-2].artifact
     return response, outputs
