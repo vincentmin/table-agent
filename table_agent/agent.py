@@ -26,6 +26,6 @@ def get_agent(
         system_message = SystemMessage(
             SYSTEM_PROMPT.format(df=df.head(), schema=output_model.model_json_schema())
         )
-        return model.invoke([system_message] + state["messages"])
+        return {"messages": model.invoke([system_message] + state["messages"])}
 
     return respond
