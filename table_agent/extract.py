@@ -2,7 +2,8 @@ from typing import Type
 import pandas as pd
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import HumanMessage
-from .graph import get_graph, Messages
+from .graph import get_graph
+from .types import State
 
 type TableInput = pd.DataFrame
 
@@ -36,13 +37,13 @@ def extract[T](
     if llm is None:
         llm = load_default_model()
     graph = get_graph(llm, table, output_model)
-    messages: Messages = graph.invoke(
+    state: State = graph.invoke(
         {
             "messages": [HumanMessage(content=prompt)],
             "df": table,
             "output_model": output_model,
         }
     )
-    response = messages[-1]
-    outputs: list[T] = messages[-2].artifact
+    response = state["messages"][-1]
+    outputs: list[T] = state["messages"][-2].artifact
     return response, outputs
