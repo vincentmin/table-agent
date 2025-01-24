@@ -9,8 +9,9 @@ from .types import State
 
 SYSTEM_PROMPT = """Your job is to extract data from a table by writing a python script.
 The python script must read the table as a pandas dataframe from `table.parquet`.
-Then write code that parses each row of the dataframe into a json with the following format:
+Then write code that parses each row of the dataframe into a json with the following json schema format:
 {schema}
+
 The script should write the parsed jsons to a file called `output.json`.
 Make sure that `ouput.json` is a list of jsons that comply with the above format.
 
@@ -30,8 +31,10 @@ def get_agent(
         system_message = SystemMessage(
             SYSTEM_PROMPT.format(df=df.head(), schema=output_model.model_json_schema())
         )
+        print("last message", state["messages"][-1].content)
         response = model.invoke([system_message] + state["messages"])
-        print(response)
+        print("Content", response.content)
+        print("Tool calls", response.tool_calls)
         return {"messages": [response]}
 
     return respond

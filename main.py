@@ -1,5 +1,5 @@
 from typing import Literal
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from datasets import load_dataset
 from pydantic import BaseModel, Field
 
@@ -16,7 +16,7 @@ print(df.head())
 # 3  This film was probably inspired by Godard's Ma...      0
 # 4  Oh, brother...after hearing about this ridicul...      0
 
-llm = ChatOllama(model="llama3.2:1b")
+llm = ChatOpenAI(model_name="gpt-4o-mini")
 
 
 class Movie(BaseModel):
