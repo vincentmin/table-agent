@@ -1,11 +1,19 @@
-from typing import Type
+from typing import Type, TypedDict, TypeVar
 import pandas as pd
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import HumanMessage
 from .graph import get_graph
 from .types import State
 
+T = TypeVar("T")
+
 type TableInput = pd.DataFrame
+
+
+class TableOutput(TypedDict):
+    response: str
+    script: str
+    outputs: list[T]
 
 
 def load_default_model() -> BaseChatModel:
@@ -24,7 +32,7 @@ def extract[T](
     output_model: Type[T],
     llm: BaseChatModel | None = None,
     prompt: str = "Extract data from table",
-) -> tuple[str, list[T]]:
+) -> TableOutput:
     """Takes in a table and an output model and returns a list of output models
 
     Args:
@@ -46,4 +54,8 @@ def extract[T](
     )
     response = state["messages"][-1]
     outputs: list[T] = state["messages"][-2].artifact
-    return response, outputs
+    return {
+        "response": response.content,
+        "script": state["script"],
+        "outputs": outputs,
+    }

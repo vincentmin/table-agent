@@ -27,6 +27,6 @@ class Movie(BaseModel):
 
 
 # Extract the table
-outputs = extract(df, Movie, llm=llm)
-for output in outputs[:5]:
+res = extract(df, Movie, llm=llm)
+for output in res["outputs"][:5]:
     print(output)
