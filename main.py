@@ -4,6 +4,7 @@ from datasets import load_dataset
 from pydantic import BaseModel, Field
 
 from table_agent import extract
+from table_agent.utils import truncate_model
 
 # Load the IMDb Movie Reviews Dataset
 df = load_dataset("imdb")["train"].to_pandas()
@@ -29,4 +30,10 @@ class Movie(BaseModel):
 # Extract the table
 res = extract(df, Movie, llm=llm)
 for output in res["outputs"][:5]:
-    print(output)
+    print(truncate_model(output))
+#
+# review='I rented I AM CURIOUS-YELLOW from my...' sentiment='negative'
+# review='"I Am Curious: Yellow" is a risible...' sentiment='negative'
+# review='If only to avoid making this type of film in...' sentiment='negative'
+# review="This film was probably inspired by Godard's Mascul..." sentiment='negative'
+# review='Oh, brother...after hearing about this ridiculous film...' sentiment='negative'

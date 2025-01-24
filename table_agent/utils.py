@@ -6,7 +6,7 @@ def truncate(text: str, max_tokens: int, model="gpt-4o") -> str:
     enc = tiktoken.encoding_for_model(model)
     tokens = enc.encode(text)
     if len(tokens) > max_tokens:
-        return enc.decode(tokens[:max_tokens]) + "...<<Truncated>>"
+        return enc.decode(tokens[:max_tokens]) + "..."
     return text
 
 
