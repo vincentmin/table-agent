@@ -70,4 +70,4 @@ def python_tool(
                 f"Your script printed the following output:\n{out}\n\n"
                 f"Here are the first 5 outputs:\n{outputs[:5]}"
             )
-            return text, outputs
+            return text, (script, outputs)

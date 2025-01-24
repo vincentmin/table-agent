@@ -53,9 +53,14 @@ def extract[T](
         }
     )
     response = state["messages"][-1]
-    outputs: list[T] = state["messages"][-2].artifact
+    artifact: tuple[str, list[T]] | None = state["messages"][-2].artifact
+    if artifact is None:
+        script = ""
+        outputs = []
+    else:
+        script, outputs = artifact
     return {
         "response": response.content,
-        "script": state["script"],
+        "script": script,
         "outputs": outputs,
     }
