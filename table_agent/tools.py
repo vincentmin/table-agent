@@ -37,8 +37,9 @@ def python_tool(
     # create temporary workspace to link to the container and run script in
     with tempfile.TemporaryDirectory() as tempdir:
         tempdir = Path(tempdir)
-        # write the script to the workspace so the container can run it
+        # write the script and df to the workspace so the container can run it
         (tempdir / "script.py").write_text(script)
+        state["df"].to_parquet(tempdir / "table.parquet")
 
         image = get_image()
         container = DockerContainer(image.tag).with_volume_mapping(
@@ -62,6 +63,7 @@ def python_tool(
                 outputs = json.load(output_file)
 
             if not isinstance(outputs, list):
+                print("output.json must contain a **list** of outputs")
                 raise ValueError("ouput.json must contain a **list** of outputs")
 
             text = (
