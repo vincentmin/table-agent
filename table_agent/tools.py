@@ -35,7 +35,6 @@ def python_tool(
     """Run a python script.
     You can use print statements in order to see the output,
     but be aware that excessively long outputs will be truncated."""
-    print("Running python script", script)
     # create temporary workspace to link to the container and run script in
     with tempfile.TemporaryDirectory() as tempdir:
         tempdir = Path(tempdir)
@@ -55,39 +54,40 @@ def python_tool(
                 if out.strip()
                 else ""
             )
-            print("Output:", out)
+
+            # check if the script ran successfully
             if exit_code != 0:
                 raise ValueError(f"Error running script: {out}")
 
             # check if the file `output.json` was created
             output_file = tempdir / "output.json"
             if not output_file.exists():
-                print("No output.json file was created")
                 raise ValueError(f"{text}\n\nError: No output.json file was created")
 
             # read the output file
             with output_file.open() as output_file:
                 outputs = json.load(output_file)
 
+            # check if the output is a list
             if not isinstance(outputs, list):
-                print("output.json must contain a **list** of outputs")
                 raise ValueError(
                     f"{text}\n\nError: output.json must contain a **list** of outputs"
                 )
 
             output_model = state["output_model"]
 
+            # check if each item can be parsed into the output model
             def parse_output(idx: int, output):
                 try:
                     return output_model(**output)
                 except Exception as e:
-                    print(f"Error validating output: {e}")
                     raise ValueError(
                         f"{text}\n\nError: Encountered an error validating line {idx} in output.json.\nError: {e}"
                     )
 
             outputs = [parse_output(idx, output) for idx, output in enumerate(outputs)]
 
+            # craft the response to the LLM
             display_outputs = [truncate_model(output) for output in outputs[:5]]
             text += f"\n\nHere are the first 5 outputs:\n{display_outputs}"
 
