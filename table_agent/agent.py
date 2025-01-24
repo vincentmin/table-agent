@@ -1,16 +1,20 @@
 from typing import Type
 import pandas as pd
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import SystemMessage, AnyMessage, AIMessage
+from langchain_core.messages import SystemMessage, AIMessage
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel
 
 from .types import State
 
-SYSTEM_PROMPT = """Your job is to write a python function that extracts a single row of a pandas dataframe into a json with the following format:
+SYSTEM_PROMPT = """Your job is to extract data from a table by writing a python script.
+The python script must read the table as a pandas dataframe from `table.parquet`.
+Then write code that parses each row of the dataframe into a json with the following format:
 {schema}
+The script should write the parsed jsons to a file called `output.json`.
+Make sure that `ouput.json` is a list of jsons that comply with the above format.
 
-The first 5 lines of the dataframe look as follows:
+Here follow the first 5 lines of the dataframe you need to act on:
 {df}"""
 
 
