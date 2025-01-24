@@ -1077,33 +1077,47 @@ name = "table-agent"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "datasets" },
     { name = "langchain-core" },
-    { name = "langchain-ollama" },
-    { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "pandas" },
     { name = "testcontainers" },
 ]
 
-[package.dev-dependencies]
+[package.optional-dependencies]
+all = [
+    { name = "datasets" },
+    { name = "langchain-ollama" },
+    { name = "langchain-openai" },
+    { name = "ruff" },
+]
+datasets = [
+    { name = "datasets" },
+]
 dev = [
     { name = "ruff" },
+]
+ollama = [
+    { name = "langchain-ollama" },
+]
+openai = [
+    { name = "langchain-openai" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "datasets", specifier = ">=3.2.0" },
+    { name = "datasets", marker = "extra == 'all'", specifier = ">=3.2.0" },
+    { name = "datasets", marker = "extra == 'datasets'", specifier = ">=3.2.0" },
     { name = "langchain-core", specifier = ">=0.3.31" },
-    { name = "langchain-ollama", specifier = ">=0.2.2" },
-    { name = "langchain-openai", specifier = ">=0.3.1" },
+    { name = "langchain-ollama", marker = "extra == 'all'", specifier = ">=0.2.2" },
+    { name = "langchain-ollama", marker = "extra == 'ollama'", specifier = ">=0.2.2" },
+    { name = "langchain-openai", marker = "extra == 'all'", specifier = ">=0.3.1" },
+    { name = "langchain-openai", marker = "extra == 'openai'", specifier = ">=0.3.1" },
     { name = "langgraph", specifier = ">=0.2.66" },
     { name = "pandas", specifier = ">=2.2.3" },
+    { name = "ruff", marker = "extra == 'all'", specifier = ">=0.9.3" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", specifier = ">=4.9.1" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.9.3" }]
 
 [[package]]
 name = "tenacity"
