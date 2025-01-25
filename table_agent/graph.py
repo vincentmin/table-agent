@@ -1,24 +1,23 @@
-from typing import Literal, Type
-import pandas as pd
+from typing import Literal
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import ToolNode
+from langchain_core.tools import BaseTool
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage
-from pydantic import BaseModel
 
 from .tools import python_tool
 from .types import State
 
 
-def get_graph(llm: BaseChatModel, df: pd.DataFrame, output_model: Type[BaseModel]):
+def get_graph(llm: BaseChatModel, additional_tools: list[BaseTool] | None):
     """Returns a langgraph runnable that extracts data from a table
 
     Args:
         llm (BaseChatModel): A language model
-        df (pd.DataFrame): The table to be parsed
-        output_model (Type[BaseModel]): The table will be parsed into a list of instances of this output model
+        additional_tools (list[BaseTool] | None): Any additional tools to be added to the standard tools
     """
-    tools = [python_tool]
+    tools = additional_tools or []
+    tools.append(python_tool)
     tool_node = ToolNode(tools)
     model = llm.bind_tools(tools)
 

@@ -1,6 +1,7 @@
 from typing import Type, TypedDict
 import pandas as pd
 from langchain_core.language_models import BaseChatModel
+from langchain_core.tools import BaseTool
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel
@@ -37,6 +38,14 @@ Make sure that `ouput.json` is a list of jsons that comply with the above format
 Here follow the first 5 lines of the dataframe you need to act on:
 {df}"""
 
+DOCKERFILE = """FROM python:3.12-slim
+RUN pip install -U pip && pip install pandas pyarrow
+
+WORKDIR /workspace
+
+CMD ["sleep", "infinity"]
+"""
+
 
 def extract[T: BaseModel](
     table: pd.DataFrame,
@@ -44,6 +53,8 @@ def extract[T: BaseModel](
     llm: BaseChatModel | None = None,
     system_prompt: str | None = None,
     user_prompt: str = "Extract data from table",
+    dockerfile: str = DOCKERFILE,
+    tools: list[BaseTool] | None = None,
     config: RunnableConfig | None = None,
 ) -> TableOutput[T]:
     """Takes in a table and an output model and returns a list of output models
@@ -55,6 +66,7 @@ def extract[T: BaseModel](
         system_prompt (str, optional): The system prompt. Defaults to None.
         user_prompt (str, optional): The user prompt. Defaults to "Extract data from table".
         config (RunnableConfig, optional): The configuration. Defaults to None.
+        tools (list[BaseTool], optional): Any additional tools to be added to the standard tools. Defaults to None.
 
     Returns:
         TableOutput: The model response, the script, and the outputs
@@ -64,12 +76,13 @@ def extract[T: BaseModel](
     system_prompt = system_prompt or SYSTEM_PROMPT.format(
         df=table.head(), schema=output_model.model_json_schema()
     )
-    graph = get_graph(llm, table, output_model)
+    graph = get_graph(llm, tools)
     state: State = graph.invoke(
         {
             "messages": [SystemMessage(system_prompt), HumanMessage(user_prompt)],
             "df": table,
             "output_model": output_model,
+            "dockerfile": dockerfile,
         },
         config=config,
     )

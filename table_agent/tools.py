@@ -11,19 +11,11 @@ from langgraph.prebuilt import InjectedState
 from .types import State
 from .utils import truncate, truncate_model
 
-DOCKERFILE = """FROM python:3.12-slim
-RUN pip install -U pip && pip install pandas pyarrow
-
-WORKDIR /workspace
-
-CMD ["sleep", "infinity"]
-"""
-
 
 @lru_cache
-def get_image():
+def get_image(dockerfile: str) -> DockerImage:
     with tempfile.TemporaryDirectory() as tempdir:
-        (Path(tempdir) / "Dockerfile").write_text(DOCKERFILE)
+        (Path(tempdir) / "Dockerfile").write_text(dockerfile)
         return DockerImage(path=tempdir, tag="table_agent").build()
 
 
@@ -42,7 +34,7 @@ def python_tool(
         (tempdir / "script.py").write_text(script)
         state["df"].to_parquet(tempdir / "table.parquet")
 
-        image = get_image()
+        image = get_image(state["dockerfile"])
         container = DockerContainer(image.tag).with_volume_mapping(
             str(tempdir), "/workspace", mode="rw"
         )
