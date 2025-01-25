@@ -1081,6 +1081,7 @@ dependencies = [
     { name = "langgraph" },
     { name = "pandas" },
     { name = "testcontainers" },
+    { name = "tiktoken" },
 ]
 
 [package.optional-dependencies]
@@ -1117,6 +1118,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'all'", specifier = ">=0.9.3" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", specifier = ">=4.9.1" },
+    { name = "tiktoken", specifier = ">=0.8.0" },
 ]
 
 [[package]]
