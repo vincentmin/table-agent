@@ -41,53 +41,6 @@ Here follow the first 5 lines of the dataframe you need to act on:
 {df}"""
 
 
-def _extract[T: BaseModel](
-    invoke: callable,
-    table: pd.DataFrame,
-    output_model: Type[T],
-    llm: BaseChatModel | None = None,
-    system_prompt: str | None = None,
-    user_prompt: str | None = None,
-    docker_image_tag: str | None = None,
-    tools: list[BaseTool] | None = None,
-    config: RunnableConfig | None = None,
-) -> TableOutput[T]:
-    """See extract or aextract for documentation"""
-
-    llm = llm or load_default_model()
-    system_prompt = system_prompt or SYSTEM_PROMPT.format(
-        df=table.head(), schema=output_model.model_json_schema()
-    )
-    user_prompt = user_prompt or "Extract data from table"
-    docker_image_tag = docker_image_tag or get_image().tag
-    tools = tools or [python_tool]
-
-    graph = get_graph(llm, tools)
-    state: State = invoke(graph)(
-        {
-            "messages": [SystemMessage(system_prompt), HumanMessage(user_prompt)],
-            "df": table,
-            "output_model": output_model,
-            "docker_image": docker_image_tag,
-        },
-        config=config,
-    )
-
-    response = state["messages"][-1]
-    artifact: tuple[str, list[T]] | None = state["messages"][-2].artifact
-    if artifact is None:
-        script = ""
-        outputs = []
-    else:
-        script, outputs = artifact
-
-    return {
-        "response": response.content,
-        "script": script,
-        "outputs": outputs,
-    }
-
-
 def extract[T: BaseModel](
     table: pd.DataFrame,
     output_model: Type[T],
@@ -98,7 +51,7 @@ def extract[T: BaseModel](
     tools: list[BaseTool] | None = None,
     config: RunnableConfig | None = None,
 ) -> TableOutput[T]:
-    """Takes in a table and an output model and returns a list of output models
+        """Takes in a table and an output model and returns a list of output models
 
     Args:
         table (pd.DataFrame): A pandas DataFrame.
@@ -124,17 +77,39 @@ def extract[T: BaseModel](
     Returns:
         TableOutput: The model response, the script, and the outputs
     """
-    return _extract(
-        lambda graph: graph.invoke,
-        table,
-        output_model,
-        llm,
-        system_prompt,
-        user_prompt,
-        docker_image_tag,
-        tools,
-        config,
+
+    llm = llm or load_default_model()
+    system_prompt = system_prompt or SYSTEM_PROMPT.format(
+        df=table.head(), schema=output_model.model_json_schema()
     )
+    user_prompt = user_prompt or "Extract data from table"
+    docker_image_tag = docker_image_tag or get_image().tag
+    tools = tools or [python_tool]
+
+    graph = get_graph(llm, tools)
+    state: State = graph.invoke(
+        {
+            "messages": [SystemMessage(system_prompt), HumanMessage(user_prompt)],
+            "df": table,
+            "output_model": output_model,
+            "docker_image": docker_image_tag,
+        },
+        config=config,
+    )
+
+    response = state["messages"][-1]
+    artifact: tuple[str, list[T]] | None = state["messages"][-2].artifact
+    if artifact is None:
+        script = ""
+        outputs = []
+    else:
+        script, outputs = artifact
+
+    return {
+        "response": response.content,
+        "script": script,
+        "outputs": outputs,
+    }
 
 
 async def aextract[T: BaseModel](
@@ -173,14 +148,36 @@ async def aextract[T: BaseModel](
     Returns:
         TableOutput: The model response, the script, and the outputs
     """
-    return _extract(
-        lambda graph: graph.ainvoke,
-        table,
-        output_model,
-        llm,
-        system_prompt,
-        user_prompt,
-        docker_image_tag,
-        tools,
-        config,
+
+    llm = llm or load_default_model()
+    system_prompt = system_prompt or SYSTEM_PROMPT.format(
+        df=table.head(), schema=output_model.model_json_schema()
     )
+    user_prompt = user_prompt or "Extract data from table"
+    docker_image_tag = docker_image_tag or get_image().tag
+    tools = tools or [python_tool]
+
+    graph = get_graph(llm, tools)
+    state: State = await graph.ainvoke(
+        {
+            "messages": [SystemMessage(system_prompt), HumanMessage(user_prompt)],
+            "df": table,
+            "output_model": output_model,
+            "docker_image": docker_image_tag,
+        },
+        config=config,
+    )
+
+    response = state["messages"][-1]
+    artifact: tuple[str, list[T]] | None = state["messages"][-2].artifact
+    if artifact is None:
+        script = ""
+        outputs = []
+    else:
+        script, outputs = artifact
+
+    return {
+        "response": response.content,
+        "script": script,
+        "outputs": outputs,
+    }
