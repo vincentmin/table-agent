@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from langgraph.graph import MessagesState
 
 
-class State(MessagesState):
+class State[T: BaseModel](MessagesState):
     df: pd.DataFrame
-    output_model: Type[BaseModel]
+    output_model: Type[T]
     docker_image: str
