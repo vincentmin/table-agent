@@ -7,4 +7,4 @@ from langgraph.graph import MessagesState
 class State(MessagesState):
     df: pd.DataFrame
     output_model: Type[BaseModel]
-    dockerfile: str
+    docker_image: str

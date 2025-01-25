@@ -2,21 +2,12 @@ from typing import Annotated
 import json
 from pathlib import Path
 import tempfile
-from functools import lru_cache
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.image import DockerImage
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
 
 from .types import State
 from .utils import truncate, truncate_model
-
-
-@lru_cache
-def get_image(dockerfile: str) -> DockerImage:
-    with tempfile.TemporaryDirectory() as tempdir:
-        (Path(tempdir) / "Dockerfile").write_text(dockerfile)
-        return DockerImage(path=tempdir, tag="table_agent").build()
 
 
 @tool(response_format="content_and_artifact")
@@ -34,8 +25,7 @@ def python_tool(
         (tempdir / "script.py").write_text(script)
         state["df"].to_parquet(tempdir / "table.parquet")
 
-        image = get_image(state["dockerfile"])
-        container = DockerContainer(image.tag).with_volume_mapping(
+        container = DockerContainer(state["docker_image"]).with_volume_mapping(
             str(tempdir), "/workspace", mode="rw"
         )
         with container as c:

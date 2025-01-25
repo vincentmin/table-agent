@@ -8,6 +8,8 @@ from pydantic import BaseModel
 
 from .graph import get_graph
 from .types import State
+from .docker_executor import get_image
+from .tools import python_tool
 
 
 class TableOutput[T](TypedDict):
@@ -68,8 +70,8 @@ def extract[T: BaseModel](
         tools (list[BaseTool], optional): The tools that the agent can use to complete its task.
             Defaults to None, in which case the python_tool is used. If you provide a list
             of tools, make sure it includes the python_tool or a substitute.
-        config (RunnableConfig, optional): The configuration. Defaults to None. See langchain
-            for documentation. If you run into recursion errors, you may want to
+        config (RunnableConfig, optional): Langchain configuration. Defaults to None.
+            See langchain for documentation. If you run into recursion errors, you may want to
             set the config to `{"recursion_limit": some_high_int}`.
 
     Returns:
@@ -80,16 +82,21 @@ def extract[T: BaseModel](
     system_prompt = system_prompt or SYSTEM_PROMPT.format(
         df=table.head(), schema=output_model.model_json_schema()
     )
+    user_prompt = user_prompt or "Extract data from table"
+    docker_image_tag = docker_image_tag or get_image().tag
+    tools = tools or [python_tool]
+
     graph = get_graph(llm, tools)
     state: State = graph.invoke(
         {
             "messages": [SystemMessage(system_prompt), HumanMessage(user_prompt)],
             "df": table,
             "output_model": output_model,
-            "dockerfile": dockerfile,
+            "docker_image": docker_image_tag,
         },
         config=config,
     )
+
     response = state["messages"][-1]
     artifact: tuple[str, list[T]] | None = state["messages"][-2].artifact
     if artifact is None:
@@ -97,6 +104,7 @@ def extract[T: BaseModel](
         outputs = []
     else:
         script, outputs = artifact
+
     return {
         "response": response.content,
         "script": script,
