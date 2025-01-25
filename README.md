@@ -8,9 +8,22 @@ For these methods, the cost and wait time scale linearly with the number of rows
 Instead, with our method the LLM inspects only the first 5 rows and then attempts to write a script that can parse all the rows.
 This means we can parse milions of rows efficiently without consuming milions of tokens.
 
-## Getting started
+## install the package
 
-See `main.py` for a full example.
+To install the package run
+```bash
+git clone https://github.com/vincentmin/table-agent.git
+cd table-agent
+pip install .
+```
+
+If you want to run the example in `main.py`, you will need to install the extra dependencies too
+```bash
+pip install .[all]
+python main.py
+```
+
+## extracting structured information from tables
 
 The main entrypoint is the `extract` method:
 ```python
