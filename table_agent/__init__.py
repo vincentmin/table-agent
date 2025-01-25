@@ -1,3 +1,3 @@
-from .extract import extract
+from .extract import extract, aextract
 
-__all__ = ["extract"]
+__all__ = ["extract", "aextract"]
