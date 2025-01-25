@@ -70,6 +70,7 @@ The core technologies that the project relies on are:
 - The agent is capable of parsing complex tables. Nevertheless, it can be helpful if you clean the table before feeding it to the agent. For example, if you have an excel file that changes structure after a certain number of rows (i.e. the meaning of certain column changes), you may want to split that table in 2 separate tables, each with a well defined and consistent structure.
 - If you know that your data has certain peculiarities, you can put this information in the user prompt.
 - By default, the docker image for the container that runs the script only has `pandas` python package installed. Modify the Dockerfile if you think the agent will need additional dependencies.
+- Use LangSmith or another tracing library to get full visibility into every step the agent is taking.
 
 ## Limitations
 
