@@ -1,4 +1,5 @@
 import pytest
+import itertools
 import pandas as pd
 from langchain_core.language_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage
@@ -25,7 +26,7 @@ script = """with open("output.json", "w") as f:
 
 # Bring any LangChain compatible model (e.g. OpenAI or Ollama)
 llm = FakeChatModel(
-    messages=iter(
+    messages=itertools.cycle(
         [
             AIMessage(
                 "",
