@@ -1,3 +1,3 @@
-from .extract import extract, TableInput
+from .extract import extract
 
-__all__ = ["extract", "TableInput"]
+__all__ = ["extract"]

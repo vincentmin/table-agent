@@ -3,10 +3,10 @@ import pandas as pd
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import ToolNode
 from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
 from .tools import python_tool
-from .agent import get_agent
 from .types import State
 
 
@@ -20,7 +20,11 @@ def get_graph(llm: BaseChatModel, df: pd.DataFrame, output_model: Type[BaseModel
     """
     tools = [python_tool]
     tool_node = ToolNode(tools)
-    agent = get_agent(llm, df, output_model, tools)
+    model = llm.bind_tools(tools)
+
+    def agent(state: State) -> AIMessage:
+        response = model.invoke(state["messages"])
+        return {"messages": [response]}
 
     def route(state: State) -> Literal["tools", "__end__"]:
         messages = state["messages"]
