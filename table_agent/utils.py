@@ -25,7 +25,7 @@ def truncate_model(model: BaseModel, max_length: int = 10) -> BaseModel:
         max_length (int, optional): The maximum length of strings. Defaults to 10.
     """
     truncated_data = {}
-    for field, value in model.dict().items():
+    for field, value in model.model_dump().items():
         if isinstance(value, str):
             truncated_data[field] = truncate(value, max_length)
         else:

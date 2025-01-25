@@ -929,6 +929,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.25.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/72/df/adcc0d60f1053d74717d21d58c0048479e9cab51464ce0d2965b086bd0e2/pytest_asyncio-0.25.2.tar.gz", hash = "sha256:3f8ef9a98f45948ea91a0ed3dc4268b5326c0e7bce73892acc654df4262ad45f", size = 53950 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/d8/defa05ae50dcd6019a95527200d3b3980043df5aa445d40cb0ef9f7f98ab/pytest_asyncio-0.25.2-py3-none-any.whl", hash = "sha256:0d0bb693f7b99da304a0634afc0a4b19e49d5e0de2d670f38dc4bfa5727c5075", size = 19400 },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1123,6 +1135,7 @@ all = [
     { name = "langchain-ollama" },
     { name = "langchain-openai" },
     { name = "pytest" },
+    { name = "pytest-asyncio" },
     { name = "ruff" },
 ]
 datasets = [
@@ -1130,6 +1143,7 @@ datasets = [
 ]
 dev = [
     { name = "pytest" },
+    { name = "pytest-asyncio" },
     { name = "ruff" },
 ]
 ollama = [
@@ -1152,6 +1166,8 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pytest", marker = "extra == 'all'", specifier = ">=8.3.4" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", marker = "extra == 'all'", specifier = ">=0.25.2" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.25.2" },
     { name = "ruff", marker = "extra == 'all'", specifier = ">=0.9.3" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", specifier = ">=4.9.1" },
