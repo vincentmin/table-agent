@@ -24,6 +24,7 @@ build-backend = "hatchling.build"
 [project.optional-dependencies]
 dev = [
     "ruff>=0.9.3",
+    "pytest>=8.3.4",
 ]
 datasets = [
     "datasets>=3.2.0",
@@ -36,6 +37,7 @@ openai = [
 ]
 all = [
     "ruff>=0.9.3",
+    "pytest>=8.3.4",
     "datasets>=3.2.0",
     "langchain-ollama>=0.2.2",
     "langchain-openai>=0.3.1",
