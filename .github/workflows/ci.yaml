@@ -27,5 +27,7 @@ jobs:
           pip install -e .[dev]
 
       - name: Run tests
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
           pytest
