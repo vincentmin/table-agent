@@ -69,7 +69,7 @@ def python_tool(
         state["df"].to_parquet(tempdir / "table.parquet")
 
         container = DockerContainer(state["docker_image"]).with_volume_mapping(
-            str(tempdir), "/workspace", mode="rw"
+            str(tempdir), "/workspace", mode="z"
         )
         with container as c:
             exit_code, out = c.exec("python /workspace/script.py")
